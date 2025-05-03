@@ -1,8 +1,6 @@
 # 🤖 Personal AI Assistant 
 
-[![Awesome Project](https://img.shields.io/badge/Awesome-Project-blue.svg)](https://github.com/LauraNotFound/Agente_Asistente_Personal)  
-
-🍄
+[![Awesome Project](https://img.shields.io/badge/Awesome-Project-blue.svg)](https://github.com/LauraNotFound/Agente_Asistente_Personal)
 
 **¡Transforma tu productividad con este asistente personal impulsado por IA!** 🚀
 
@@ -44,12 +42,8 @@ Este proyecto implementa un agente de IA versátil diseñado para simplificar tu
     git clone [https://github.com/LauraNotFound/Agente_Asistente_Personal](https://github.com/LauraNotFound/Agente_Asistente_Personal)
     ```
 2.  **Configura las credenciales:** Asegúrate de configurar las credenciales de Telegram, Google Sheets, Gmail, Google Calendar y OpenAI en n8n.
-3.  **Importa el flujo de trabajo en n8n.**
-4.  **¡Empieza a usar tu asistente personal!**
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar este asistente, no dudes en abrir un issue o enviar un pull request.
+3.  **Importa los flujos de trabajo en n8n.**
+5.  **¡Empieza a usar tu asistente personal!**
 
 ## 📄 Licencia
 
@@ -58,3 +52,5 @@ Este proyecto está bajo la Licencia [MIT](LICENSE).
 ---
 
 **¡Espero que disfrutes de tu nuevo asistente personal!** 🌟
+
+_**By LauraNotFound🍄**_
