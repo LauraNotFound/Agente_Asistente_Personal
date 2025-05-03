@@ -1,6 +1,8 @@
 # 🤖 Personal AI Assistant 
 
-[![Awesome Project](https://img.shields.io/badge/Awesome-Project-blue.svg)]([https://github.com/LauraNotFound/Agente_Asistente_Personal](https://github.com/LauraNotFound/Agente_Asistente_Personal)) 🍄
+[![Awesome Project](https://img.shields.io/badge/Awesome-Project-blue.svg)](https://github.com/LauraNotFound/Agente_Asistente_Personal)  
+
+🍄
 
 **¡Transforma tu productividad con este asistente personal impulsado por IA!** 🚀
 
