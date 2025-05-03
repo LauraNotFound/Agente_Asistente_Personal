@@ -1,0 +1,471 @@
+{
+  "name": "Asistente_personal",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1340,
+        -280
+      ],
+      "id": "6792d244-7723-4daa-83db-0e7d1de2e1a1",
+      "name": "Telegram Trigger",
+      "webhookId": "5c1f5e5f-2ccd-4fcc-8414-4f8282757429",
+      "credentials": {
+        "telegramApi": {
+          "id": "6o76pFLcBk1SvwIg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        0
+      ],
+      "id": "917e2786-711d-458b-bda0-552b3c0ee45f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "VjQBYQK13najwz4B",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -540,
+        40
+      ],
+      "id": "6b05a0a2-7a24-4bf3-8b92-cf21980a95d3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=Eres un agente de IA asistente personal diseñado para manejar varias tareas de manera eficiente. Tu función principal es gestionar los contactos, correos electrónicos y eventos del calendario del usuario. Tienes acceso a tres herramientas que te ayudarán a cumplir con las solicitudes:\n\nContactos: Utilízala cuando necesites buscar información de contacto como una dirección de correo electrónico. Debes utilizar esta herramienta ANTES de enviar un correo electrónico o ANTES de obtener correos electrónicos. El sheet conectado a esta herramienta cuenta con 3 columnas: la columna nombre, numero y correo. Cuando se requiera enviar un email a un contacto busca primero el nombre en la columan contacto y luego busca su dirección en la misma fila con la columna correo.\nagenteEmail: Utilízala para gestionar todas las acciones relacionadas con el correo electrónico, como enviar mensajes u obtener correos electrónicos.\nagenteCalendario: Utilízala para programar, actualizar o gestionar eventos de calendario.\nagenteBusqueda: Utilízala para proporcionar una respuesta a la pregunta del usuario, que suele ser una pregunta de carácter general. Como por ejemplo: \"¿Cuál es la montaña más alta del mundo?\".\nCuando una tarea requiera el uso de una o varias de estas herramientas, asegúrate de identificar cuál es la más adecuada, transmite los detalles pertinentes y ejecuta las acciones necesarias para completar la tarea. Tu objetivo es ser proactivo, preciso y organizado en la gestión de estos recursos para proporcionar una experiencia sin problemas para el usuario. Mete los enlaces de los eventos con un link para acceder al evento en el calendario.\n\nEsta es la fecha/hora actual: {{ $now.format('DD') }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        -240
+      ],
+      "id": "8d6561df-b79a-4ab9-8a2c-7d5957e267f0",
+      "name": "Asistente_personal"
+    },
+    {
+      "parameters": {
+        "name": "agenteCalendario",
+        "description": "Llama a esta herramienta para acciones del calendario",
+        "workflowId": {
+          "__rl": true,
+          "value": "gZrvYB0ClbsQvmwN",
+          "mode": "list",
+          "cachedResultName": "Agente_calendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -40,
+        60
+      ],
+      "id": "72d49902-9b97-4827-817c-c784d2aea502",
+      "name": "agenteCalendario"
+    },
+    {
+      "parameters": {
+        "name": "agente_email",
+        "description": "Llama a esta herramienta para acciones de correo electrónico.",
+        "workflowId": {
+          "__rl": true,
+          "value": "0TpsQK9VjojoqzYl",
+          "mode": "list",
+          "cachedResultName": "Agente_email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -200,
+        60
+      ],
+      "id": "76451d30-ca44-4129-ab37-cb28e20800f2",
+      "name": "agenteEmail"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "7663ff72-0532-4ceb-8407-7ab5a4e4c4dd"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voz"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9ea3b09b-a710-4110-bec9-480ab30388e7",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1160,
+        -280
+      ],
+      "id": "6dc3d522-115f-4427-9e69-8b899ec910e1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e4369567-d358-4f25-abf0-9854c9135c41",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        -180
+      ],
+      "id": "aee4be69-1c8f-418e-83c2-7afd7470f263",
+      "name": "Fijar_texto"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        -400
+      ],
+      "id": "d983d8ae-b6ac-47ea-803a-f3b15c82f07f",
+      "name": "Descargar_audio",
+      "webhookId": "dd955e13-9a53-4eb6-a88f-460c4096b97c",
+      "credentials": {
+        "telegramApi": {
+          "id": "6o76pFLcBk1SvwIg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -660,
+        -400
+      ],
+      "id": "e651a1fb-227b-448b-a8c0-f113f53ee4eb",
+      "name": "transcribir_audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "VjQBYQK13najwz4B",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        -240
+      ],
+      "id": "ce3fcd0f-b06f-48cf-b778-b62a1db30a52",
+      "name": "respuesta",
+      "webhookId": "64f5370c-ac30-4e0f-8eec-07823286d6fd",
+      "credentials": {
+        "telegramApi": {
+          "id": "6o76pFLcBk1SvwIg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Q1479-wywyEqItPHMm5r8JkhruRv9AP5jVVo56f8a9k",
+          "mode": "list",
+          "cachedResultName": "contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q1479-wywyEqItPHMm5r8JkhruRv9AP5jVVo56f8a9k/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 48337484,
+          "mode": "list",
+          "cachedResultName": "contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q1479-wywyEqItPHMm5r8JkhruRv9AP5jVVo56f8a9k/edit#gid=48337484"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        -360,
+        60
+      ],
+      "id": "6cf174fb-2af5-4b0e-a185-a046cad85951",
+      "name": "Contactos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "brJdL1aAV3o8LS1p",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asistente_personal": {
+      "main": [
+        [
+          {
+            "node": "respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agenteCalendario": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agenteEmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Descargar_audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fijar_texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fijar_texto": {
+      "main": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar_audio": {
+      "main": [
+        [
+          {
+            "node": "transcribir_audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "transcribir_audio": {
+      "main": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contactos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07fa1756-b9f5-4ac1-bb0a-c34957dd028e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"
+  },
+  "id": "TyFjvNX9JtoKSSQr",
+  "tags": []
+}

@@ -1,0 +1,253 @@
+{
+  "name": "Agente_calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        -60
+      ],
+      "id": "bad00d27-d00e-4f00-9d18-f56807937d9f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "VjQBYQK13najwz4B",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "Eres un asistente de calendario. Tienes acceso a múltiples herramientas para realizar cualquier acción dentro del calendario. Esta es la fecha/hora actual: {{ $now }}\n\nCrear Evento:\n \nSi no se especifica una fecha de finalización para el evento, asume que tendrá una duración de 60 minutos. Utilice esta herramienta si no hay ningún asistente especificado.\n\nCrear evento con invitado:\n\nSi no se especifica una fecha de finalización para el evento, asume que durará 60 minutos. Utilice esta herramienta SI SE ESPECIFICA UN ASISTENTE.\n\nObtener Eventos:\n\nUtiliza esta herramienta para obtener los eventos de un día determinado y resumirlos."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -280,
+        -280
+      ],
+      "id": "e14a5b64-4855-4f1e-923c-8d27c7ac8c5d",
+      "name": "agente_calendar"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "lauranotfound97@gmail.com",
+          "mode": "list",
+          "cachedResultName": "lauranotfound97@gmail.com"
+        },
+        "start": "={{ $fromAI(\"horaInicio\") }}",
+        "end": "={{ $fromAI(\"horaFinal\") }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $fromAI(\"invitado\") }}"
+          ],
+          "summary": "={{ $fromAI(\"tituloEvento\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -120,
+        40
+      ],
+      "id": "aa7e78de-9040-42f3-8d9e-2308c76b1036",
+      "name": "crear_evento_con_invitado",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lYwdI4ALseGEqS7m",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "lauranotfound97@gmail.com",
+          "mode": "list",
+          "cachedResultName": "lauranotfound97@gmail.com"
+        },
+        "start": "={{ $fromAI(\"horaInicio\") }}",
+        "end": "={{ $fromAI(\"horaFinal\") }}",
+        "additionalFields": {
+          "summary": "={{ $fromAI(\"tituloEvento\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -40
+      ],
+      "id": "9261ce81-be21-4577-b626-724648530448",
+      "name": "crear_evento",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lYwdI4ALseGEqS7m",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "lauranotfound97@gmail.com",
+          "mode": "list",
+          "cachedResultName": "lauranotfound97@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $fromAI(\"unDiaAntes\", \"un dia antes de la fecha solicitada por el usuario\") }}",
+        "timeMax": "={{ $fromAI(\"unDiaDespues\", \"un dia despues de la fecha solicitada por el usuario\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        20,
+        -20
+      ],
+      "id": "5b1f1ef1-a977-48d2-8d62-dd2d27219718",
+      "name": "obtener_evento",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "lYwdI4ALseGEqS7m",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9978df12-c27c-4f39-b6f1-2e8b3ed52371",
+              "name": "respuesta",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -280
+      ],
+      "id": "6275e5f0-81b2-49bd-a8e9-fbded1a2b9d4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -280
+      ],
+      "id": "8183279d-002a-4ba0-a8b5-3a1454fd8b15",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "agente_calendar",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "crear_evento_con_invitado": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "crear_evento": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "obtener_evento": {
+      "ai_tool": [
+        [
+          {
+            "node": "agente_calendar",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "agente_calendar": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "agente_calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "dcf944de-8bae-4913-ae78-f27c22286fff",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"
+  },
+  "id": "gZrvYB0ClbsQvmwN",
+  "tags": []
+}

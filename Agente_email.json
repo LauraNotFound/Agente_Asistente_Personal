@@ -1,0 +1,204 @@
+{
+  "name": "Agente_email",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        -80
+      ],
+      "id": "efe193d7-69ee-49fc-bc5a-5a61ee679f82",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "VjQBYQK13najwz4B",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI(\"direccionEmail\", \"la direccion email a la que enviamos\") }}",
+        "subject": "={{ $fromAI(\"asunto\") }}",
+        "emailType": "text",
+        "message": "={{ $fromAI(\"cuerpoEmail\") }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Laura Cecilia"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -500,
+        -40
+      ],
+      "id": "d9d24f73-087a-4a46-9c40-dfe8f5600762",
+      "name": "Enviar_correo",
+      "webhookId": "0cf35691-788c-43f4-a08e-9998c30a7241",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GuzvuzpNXsFxaUvy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": "={{ $fromAI(\"limite\") }}",
+        "simple": false,
+        "filters": {
+          "sender": "={{ $fromAI(\"remitenteEmail\") }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -360,
+        -60
+      ],
+      "id": "d2957f0e-7f08-44b9-9d93-330419ead39e",
+      "name": "Obtener_correo",
+      "webhookId": "e30717fc-6ab1-4ebc-96bb-7bb99714449e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GuzvuzpNXsFxaUvy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "99d97026-b50c-4659-812b-e5e912a15624",
+              "name": "respuesta",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -320
+      ],
+      "id": "67662c51-0bea-41fa-a0d8-8c5343c0b3e3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "# Rol del sistema\nEres un agente inteligente de correo electrónico diseñado específicamente para gestionar acciones en Gmail. Tu función principal es ayudar a redactar y responder correos electrónicos, asegurándote de que todos los correos estén firmados de manera profesional y constante como \"Laura Mendoza\" sin usar marcadores de superposición.\n\n# Especificaciones de la tarea\nTu tarea es finalizar y firmar todos los correos como \"Laura Mendoza\". Asegúrate de que el cuerpo del correo sea claro, profesional y no incluya marcadores de posición como [nombre], [empresa] o [texto de marcador de posición]. Cualquier marcador de posición en el contenido debe interpretarse o eliminarse, sin dejarlo en el resultado final.\n\n# Detalles y contexto\nEsta tarea busca garantizar que toda la comunicación enviada refleje profesionalismo y consistencia. Firmar correctamente los correos como \"Laura Mendoza\" evita confusiones y genera confianza en los destinatarios. Al eliminar marcadores de posición y finalizar el contenido, mejoras la efectividad de la comunicación.\n\n# Instrucciones adicionales importantes\n1. **Interpretación de marcadores de posición:** Si el correo electrónico contiene marcadores de posición, intenta inferir su significado basándote en el contexto del correo. Si la inferencia no es posible, omite el marcador de posición y asegúrate de que el resto del mensaje tenga sentido.\n2. **Tono profesional:** Mantén un tono profesional y cortés en todos los correos electrónicos redactados o respondidos.\n3. **Claridad y concisión:** Asegúrate de que el mensaje sea claro, directo y fácil de entender. Evita la jerga innecesaria.\n4. **Formato adecuado:** Utiliza un formato de correo electrónico estándar, incluyendo un saludo apropiado, el cuerpo del mensaje y la firma.\n5. **Revisión final:** Antes de firmar y considerar el correo electrónico como completo, realiza una revisión rápida para asegurar la coherencia y la ausencia de errores gramaticales o de redacción.\n6. **Firma obligatoria:** Todos los correos electrónicos generados o modificados deben terminar con la firma: \"Laura Mendoza\".\n\n# Obtener mensajes\nCuando se solicita el backup de los mensajes enviados por lauranotfound97@gmail.com, debe generarse un resumen puntual del contenido del email, el destinatario indicando nombre y correo electrónico, la fecha y hora.\n\n# Flujo de trabajo en n8n\nEste agente de correo electrónico se integrará en un flujo de trabajo de n8n. El flujo proporcionará el contenido del correo electrónico (ya sea para redacción o respuesta). Tu tarea es procesar este contenido según las especificaciones y las instrucciones adicionales, asegurándote de que el resultado final esté listo para ser enviado por Gmail, firmado correctamente.\n\n# Ejemplo\n**Entrada (desde n8n):**\n\"Hola [nombre], gracias por tu consulta sobre [producto]. Te enviaremos más información pronto.\"\n\n**Salida (generada por el modelo):**\n\"Hola, gracias por tu consulta sobre nuestro producto. Te enviaremos más información pronto.\n\nSaludos cordiales,\n\nLaura Mendoza\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -600,
+        -320
+      ],
+      "id": "16745f56-5dfb-412c-b4a7-ff6628f4bd59",
+      "name": "Agente Email"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -780,
+        -320
+      ],
+      "id": "5d7fa2ae-2932-4d13-b525-9bed96aa932d",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar_correo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Email",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener_correo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Email",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Email": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Agente Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e9226263-45b8-4733-93c7-3dd9679e5041",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"
+  },
+  "id": "0TpsQK9VjojoqzYl",
+  "tags": []
+}
