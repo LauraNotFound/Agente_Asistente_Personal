@@ -41,7 +41,7 @@ Este proyecto implementa un agente de IA versátil diseñado para simplificar tu
 1.  **Clona el repositorio:**
 
     ```bash
-    git clone https://github.com/tu-usuario/tu-repo.git
+    git clone https://github.com/LauraNotFound/Agente_Asistente_Personal
     ```
 
 2.  **Configura las credenciales:** Asegúrate de configurar las credenciales de Telegram, Google Sheets, Gmail, Google Calendar y OpenAI en n8n.
