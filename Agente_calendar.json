@@ -30,7 +30,7 @@
         "promptType": "define",
         "text": "={{ $json.query }}",
         "options": {
-          "systemMessage": "Eres un asistente de calendario. Tienes acceso a múltiples herramientas para realizar cualquier acción dentro del calendario. Esta es la fecha/hora actual: {{ $now }}\n\nCrear Evento:\n \nSi no se especifica una fecha de finalización para el evento, asume que tendrá una duración de 60 minutos. Utilice esta herramienta si no hay ningún asistente especificado.\n\nCrear evento con invitado:\n\nSi no se especifica una fecha de finalización para el evento, asume que durará 60 minutos. Utilice esta herramienta SI SE ESPECIFICA UN ASISTENTE.\n\nObtener Eventos:\n\nUtiliza esta herramienta para obtener los eventos de un día determinado y resumirlos."
+          "systemMessage": "Eres un asistente de calendario. Tienes acceso a múltiples herramientas para realizar cualquier acción dentro del calendario. Esta es la fecha/hora actual: {{ new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' }) }}\n\nCuando programes un evento con este asistente, asegúrate de que el correo electrónico del invitado provenga directamente de la herramienta de Contactos si ya ha sido usada previamente.\n\nCrear Evento:\n \nSi no se especifica una fecha de finalización para el evento, asume que tendrá una duración de 60 minutos. Utilice esta herramienta si no hay ningún asistente especificado.\n\nCrear evento con invitado:\n\nSi no se especifica una fecha de finalización para el evento, asume que durará 60 minutos. Utilice esta herramienta SI SE ESPECIFICA UN ASISTENTE.\n\nObtener Eventos:\n\nUtiliza esta herramienta para obtener los eventos de un día determinado y resumirlos."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -243,7 +243,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "dcf944de-8bae-4913-ae78-f27c22286fff",
+  "versionId": "87105e8c-ae42-4e18-b2d7-a0db1e839578",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"

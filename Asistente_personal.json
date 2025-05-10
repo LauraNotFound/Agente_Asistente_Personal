@@ -68,7 +68,7 @@
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "=Eres un agente de IA asistente personal diseñado para manejar varias tareas de manera eficiente. Tu función principal es gestionar los contactos, correos electrónicos y eventos del calendario del usuario. Tienes acceso a tres herramientas que te ayudarán a cumplir con las solicitudes:\n\nContactos: Utilízala cuando necesites buscar información de contacto como una dirección de correo electrónico. Debes utilizar esta herramienta ANTES de enviar un correo electrónico o ANTES de obtener correos electrónicos. El sheet conectado a esta herramienta cuenta con 3 columnas: la columna nombre, numero y correo. Cuando se requiera enviar un email a un contacto busca primero el nombre en la columan contacto y luego busca su dirección en la misma fila con la columna correo.\nagenteEmail: Utilízala para gestionar todas las acciones relacionadas con el correo electrónico, como enviar mensajes u obtener correos electrónicos.\nagenteCalendario: Utilízala para programar, actualizar o gestionar eventos de calendario.\nagenteBusqueda: Utilízala para proporcionar una respuesta a la pregunta del usuario, que suele ser una pregunta de carácter general. Como por ejemplo: \"¿Cuál es la montaña más alta del mundo?\".\nCuando una tarea requiera el uso de una o varias de estas herramientas, asegúrate de identificar cuál es la más adecuada, transmite los detalles pertinentes y ejecuta las acciones necesarias para completar la tarea. Tu objetivo es ser proactivo, preciso y organizado en la gestión de estos recursos para proporcionar una experiencia sin problemas para el usuario. Mete los enlaces de los eventos con un link para acceder al evento en el calendario.\n\nEsta es la fecha/hora actual: {{ $now.format('DD') }}"
+          "systemMessage": "=Eres un agente de IA asistente personal diseñado para manejar varias tareas de manera eficiente. Tu función principal es gestionar los contactos, correos electrónicos y eventos del calendario del usuario. Tienes acceso a tres herramientas que te ayudarán a cumplir con las solicitudes:\n\nContactos: Utilízala cuando necesites buscar información de contacto como una dirección de correo electrónico. Debes utilizar esta herramienta ANTES de enviar un correo electrónico o ANTES de obtener correos electrónicos. El sheet conectado a esta herramienta cuenta con 3 columnas: la columna nombre, numero y correo. Cuando debas enviar un correo a una persona, NO GENERES un correo artificial como “sandra@example.com”. DEBES usar la herramienta de Contactos ANTES de enviar el correo. Busca el nombre de la persona en la columna “nombre” del sheet, y usa el valor que aparece en la columna “correo” de esa misma fila como dirección de correo electrónico. NO adivines correos. Usa estrictamente el dato del contacto encontrado en el Google Sheet. Cuando programes una reunión y debas enviar un correo al asistente, utiliza la herramienta Contactos para obtener el correo del nombre. Luego **almacena ese correo** como valor y **úsalo explícitamente al invocar la herramienta de correo electrónico**. NO generes direcciones falsas como cecilia@example.com. Usa exactamente la dirección obtenida desde el Google Sheet.\n\nIMPORTANTE: Una vez que hayas buscado el correo desde la herramienta de Contactos, **NO debes generar ningún otro correo adicional ni alternativo**.  \nUsa solamente ese correo como destinatario del mensaje. No debes suponer ni crear direcciones como nombre@example.com, aunque parezcan correctas.  \nEnvia solo un correo, y solo al contacto encontrado en la hoja de cálculo.\n\nagenteEmail: Utilízala para gestionar todas las acciones relacionadas con el correo electrónico, como enviar mensajes u obtener correos electrónicos.\nagenteCalendario: Utilízala para programar, actualizar o gestionar eventos de calendario.\nagenteBusqueda: Utilízala para proporcionar una respuesta a la pregunta del usuario, que suele ser una pregunta de carácter general. Como por ejemplo: \"¿Cuál es la montaña más alta del mundo?\".\nCuando una tarea requiera el uso de una o varias de estas herramientas, asegúrate de identificar cuál es la más adecuada, transmite los detalles pertinentes y ejecuta las acciones necesarias para completar la tarea. Tu objetivo es ser proactivo, preciso y organizado en la gestión de estos recursos para proporcionar una experiencia sin problemas para el usuario. Mete los enlaces de los eventos con un link para acceder al evento en el calendario.\n\nEsta es la fecha/hora actual: {{ $now.format('DD') }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -324,6 +324,34 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "name": "agenteBusqueda",
+        "description": "Llama a esta herramienta para realizar acciones de búsqueda en internet.",
+        "workflowId": {
+          "__rl": true,
+          "value": "0XryVyfMhbDqGKkM",
+          "mode": "list",
+          "cachedResultName": "Agente_Busqueda"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        40
+      ],
+      "id": "31faed41-cab4-48b9-ba9b-5ec406f07c29",
+      "name": "agenteBusqueda"
     }
   ],
   "pinData": {},
@@ -455,13 +483,24 @@
           }
         ]
       ]
+    },
+    "agenteBusqueda": {
+      "ai_tool": [
+        [
+          {
+            "node": "Asistente_personal",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "07fa1756-b9f5-4ac1-bb0a-c34957dd028e",
+  "versionId": "01cbf3f4-2bde-4c57-b72a-6a173c339c03",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"

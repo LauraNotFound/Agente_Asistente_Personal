@@ -1,0 +1,209 @@
+{
+  "name": "Agente_Busqueda",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        -40
+      ],
+      "id": "411f09ac-b308-4112-a652-4925a19f4125",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "Para responder a la pregunta del usuario, primero busca en wikipedia. Si no encuentras allí la respuesta, busca artículos utilizando la API de Hacker News. Si eso tampoco funciona, entonces utiliza Serp API para responder a la pregunta del usuario.\nRECUERDA\nSólo deberías llamar a una herramienta. Nunca llames a las tres herramientas si puedes obtener una respuesta con una sola: Wikipedia, Hacker News API, y Serp API"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -160,
+        -40
+      ],
+      "id": "e73e95b6-27a9-4fe5-935b-ad44d657464d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        180
+      ],
+      "id": "02071e91-5828-48f3-ae3c-6599496289ad",
+      "name": "busqueda",
+      "credentials": {
+        "openAiApi": {
+          "id": "VjQBYQK13najwz4B",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        340
+      ],
+      "id": "1acd425f-1cb2-4c8a-bc49-079f1cc920ee",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "resource": "all",
+        "limit": "={{ $fromAI(\"limite\") }}",
+        "additionalFields": {
+          "keyword": "={{ $fromAI(\"keyword\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.hackerNewsTool",
+      "typeVersion": 1,
+      "position": [
+        0,
+        360
+      ],
+      "id": "8925f5d3-6c6a-4106-9608-6967917025f1",
+      "name": "Hacker News"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        160,
+        340
+      ],
+      "id": "859b8f77-03cd-4da1-96fe-c07285fb23bc",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "hV1f9RaoEwQpJuw0",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01eec9c7-bb77-4b7c-b992-dc58c9143d37",
+              "name": "respuesta",
+              "value": "={{ $json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        -40
+      ],
+      "id": "5c1ec2f8-40ce-4146-96f3-d8c615a46aef",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "busqueda": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hacker News": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8d357f7-21cf-4eec-94f8-731399ca59c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "055c9dce9d8d64cd5eb6d86ca504da275add73806ff3fcdf57bcda943439601f"
+  },
+  "id": "0XryVyfMhbDqGKkM",
+  "tags": []
+}
